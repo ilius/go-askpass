@@ -108,6 +108,9 @@ func Askpass(prompt string, verify bool) (string, error) {
 }
 
 func getAskpassBinaryPath() string {
+	if os.Getenv("DISPLAY") == "" {
+		return ""
+	}
 	if os.Getenv("GO_ASKPASS") != "" {
 		askpassPath := os.Getenv("GO_ASKPASS")
 		_, err := os.Stat(askpassPath)
