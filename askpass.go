@@ -56,7 +56,7 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 		defer tty.Close()
 		fd = int(tty.Fd())
 	}
-	out.WriteString(prompt + ": ")
+	out.WriteString(prompt)
 	pw, err := terminal.ReadPassword(fd)
 	out.WriteString("\n")
 	if err != nil {
