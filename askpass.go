@@ -66,13 +66,13 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 }
 
 // Askpass prompts user for an interactive password.
-// If verify is true, confirm a second time.
+// If confirm is true, confirms a second time.
 // Mistakes during confirmation cause the process to restart upto a
 // maximum of 2 times.
 // We will try to use one of GUI askpass programs (in Linux/Unix)
 // If none were found, will prompt in standard input
 // If standard input is redirected, will open a new tty for reading password
-func Askpass(prompt string, verify bool, verifyPrompt string) (string, error) {
+func Askpass(prompt string, confirm bool, confirmPrompt string) (string, error) {
 	var out *os.File
 	if terminal.IsTerminal(syscall.Stdout) {
 		out = os.Stdout
@@ -86,11 +86,11 @@ func Askpass(prompt string, verify bool, verifyPrompt string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if !verify {
+		if !confirm {
 			return string(pw1), nil
 		}
 
-		pw2, err := askpassOnce(verifyPrompt, out)
+		pw2, err := askpassOnce(confirmPrompt, out)
 		if err != nil {
 			return "", err
 		}
