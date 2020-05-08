@@ -72,7 +72,7 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 // We will try to use one of GUI askpass programs (in Linux/Unix)
 // If none were found, will prompt in standard input
 // If standard input is redirected, will open a new tty for reading password
-func Askpass(prompt string, verify bool) (string, error) {
+func Askpass(prompt string, verify bool, verifyPrompt string) (string, error) {
 	var out *os.File
 	if terminal.IsTerminal(syscall.Stdout) {
 		out = os.Stdout
@@ -90,7 +90,7 @@ func Askpass(prompt string, verify bool) (string, error) {
 			return string(pw1), nil
 		}
 
-		pw2, err := askpassOnce(prompt+" again", out)
+		pw2, err := askpassOnce(verifyPrompt, out)
 		if err != nil {
 			return "", err
 		}
