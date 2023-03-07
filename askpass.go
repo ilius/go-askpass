@@ -45,19 +45,19 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 		}
 		return stdout, nil
 	}
-	var fd int
-	if terminal.IsTerminal(syscall.Stdin) {
-		fd = syscall.Stdin
+	var fd uintptr
+	if terminal.IsTerminal(int(syscall.Stdin)) {
+		fd = uintptr(syscall.Stdin)
 	} else {
 		tty, err := os.Open("/dev/tty")
 		if err != nil {
 			return "", errors.Wrap(err, "error allocating terminal")
 		}
 		defer tty.Close()
-		fd = int(tty.Fd())
+		fd = tty.Fd()
 	}
 	out.WriteString(prompt)
-	pw, err := terminal.ReadPassword(fd)
+	pw, err := terminal.ReadPassword(int(fd))
 	out.WriteString("\n")
 	if err != nil {
 		return "", err
@@ -74,9 +74,9 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 // If standard input is redirected, will open a new tty for reading password
 func Askpass(prompt string, confirm bool, confirmPrompt string) (string, error) {
 	var out *os.File
-	if terminal.IsTerminal(syscall.Stdout) {
+	if terminal.IsTerminal(int(syscall.Stdout)) {
 		out = os.Stdout
-	} else if terminal.IsTerminal(syscall.Stderr) {
+	} else if terminal.IsTerminal(int(syscall.Stderr)) {
 		out = os.Stderr
 	} else {
 		return "", fmt.Errorf("neither stdout not stderr is a terminal")
