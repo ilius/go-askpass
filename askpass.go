@@ -26,7 +26,6 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -51,7 +50,7 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 	} else {
 		tty, err := os.Open("/dev/tty")
 		if err != nil {
-			return "", errors.Wrap(err, "error allocating terminal")
+			return "", fmt.Errorf("error allocating terminal: %w", err)
 		}
 		defer tty.Close()
 		fd = tty.Fd()
