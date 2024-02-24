@@ -26,7 +26,7 @@ import (
 	"os"
 	"syscall"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func askpassOnce(prompt string, out *os.File) (string, error) {
@@ -45,7 +45,7 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 		return stdout, nil
 	}
 	var fd uintptr
-	if terminal.IsTerminal(int(syscall.Stdin)) {
+	if term.IsTerminal(int(syscall.Stdin)) {
 		fd = uintptr(syscall.Stdin)
 	} else {
 		tty, err := os.Open("/dev/tty")
@@ -56,7 +56,7 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 		fd = tty.Fd()
 	}
 	out.WriteString(prompt)
-	pw, err := terminal.ReadPassword(int(fd))
+	pw, err := term.ReadPassword(int(fd))
 	out.WriteString("\n")
 	if err != nil {
 		return "", err
@@ -73,9 +73,9 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 // If standard input is redirected, will open a new tty for reading password
 func Askpass(prompt string, confirm bool, confirmPrompt string) (string, error) {
 	var out *os.File
-	if terminal.IsTerminal(int(syscall.Stdout)) {
+	if term.IsTerminal(int(syscall.Stdout)) {
 		out = os.Stdout
-	} else if terminal.IsTerminal(int(syscall.Stderr)) {
+	} else if term.IsTerminal(int(syscall.Stderr)) {
 		out = os.Stderr
 	} else {
 		return "", fmt.Errorf("neither stdout not stderr is a terminal")
