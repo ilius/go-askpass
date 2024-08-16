@@ -40,7 +40,7 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 			}
 		}
 		if stdout == "" {
-			return "", fmt.Errorf("Entered empty password")
+			return "", fmt.Errorf("entered empty password")
 		}
 		return stdout, nil
 	}
@@ -55,9 +55,15 @@ func askpassOnce(prompt string, out *os.File) (string, error) {
 		defer tty.Close()
 		fd = tty.Fd()
 	}
-	out.WriteString(prompt)
+	_, err := out.WriteString(prompt)
+	if err != nil {
+		return "", err
+	}
 	pw, err := term.ReadPassword(int(fd))
-	out.WriteString("\n")
+	if err != nil {
+		return "", err
+	}
+	_, err = out.WriteString("\n")
 	if err != nil {
 		return "", err
 	}
@@ -100,10 +106,13 @@ func Askpass(prompt string, confirm bool, confirmPrompt string) (string, error) 
 			return a, nil
 		}
 
-		out.WriteString("** password mismatch; try again ..\n")
+		_, err = out.WriteString("** password mismatch; try again ..\n")
+		if err != nil {
+			return "", err
+		}
 	}
 
-	return "", fmt.Errorf("Too many tries getting password")
+	return "", fmt.Errorf("too many tries getting password")
 }
 
 func getAskpassBinaryPath() string {
